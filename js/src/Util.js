@@ -11,10 +11,6 @@ var win = window,
         0;
     }) ? /\b_super\b/ : /.*/;
 
-var STICKY_THRESHOLD = .0004;
-var GRAVITY_X = 0;
-var GRAVITY_Y = 0.000980665;
-
 if (!Date['now']) {
     Date['now'] = function() {
         return +new Date;

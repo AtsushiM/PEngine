@@ -11,10 +11,6 @@ var win = window,
         0;
     }) ? /\b_super\b/ : /.*/;
 
-var STICKY_THRESHOLD = .0004;
-var GRAVITY_X = 0;
-var GRAVITY_Y = 0.000980665;
-
 if (!Date['now']) {
     Date['now'] = function() {
         return +new Date;
@@ -438,53 +434,58 @@ function Observer_event(that, args /* varless */, e) {
 // Engine
 var Engine = classExtendObserver({
     'init': function(config) {
+        config = config || NULLOBJ;
+
         var that = this,
-            computed;
+            arg = {
+                'engine': that
+            };
 
         that['_super']();
 
-        that._canvas = config['canvas'];
-        that._ctx = that._canvas.getContext('2d');
-
-        computed = document.defaultView.getComputedStyle(that._canvas, null)
-
-        that['width'] = +computed['width'].replace(/[^0-9\.]/g, '');
-        that['height'] = +computed['height'].replace(/[^0-9\.]/g, '');
+        that._gravity = config['gravity'] || {
+            'x': 0,
+            'y': 0.000980665
+        };
+        that._sticky_threshold = config['sticky_threshold'] || 0.0004;
 
         that.entities = [];
         that.collidables = [];
-        that.collider = new CollisionDetector;
-        that.solver = new CollisionResolver;
+        that.collider = new CollisionDetector(arg);
+        that.solver = new CollisionResolver(arg);
     },
     'addEntity': function(entity) {
         this.entities.push(entity);
     },
+    'removeEntity': function(entity) {
+        this._removeEntity(this.entities, entity);
+    },
     'addCollision': function(entity) {
         this.collidables.push(entity);
     },
-    'render': function() {
-        var that = this;
-
-        that._ctx.clearRect(0, 0, that['width'], that['height']);
-
-        that._render(that.entities);
-        that._render(that.collidables);
+    'removeCollision': function(entity) {
+        this._removeEntity(this.collidables, entity);
     },
-    _render: function(entities) {
-        var i = entities.length,
-            entity,
-            ctx = this._ctx;
+    _removeEntity: function(entities, entity) {
+        var i = entities.length;
 
         for (; i--; ) {
-            entity = entities[i];
-
-            ctx.fillStyle = "rgb(150,29,28)";
-            ctx.fillRect(entity['x'], entity['y'], entity['width'], entity['height']);
+            if (entities[i] === entity) {
+                deleteArrayKey(entities, i);
+                break;
+            }
         }
     },
+    'getEntities': function() {
+        return this.entities;
+    },
+    'getCollidables': function() {
+        return this.collidables;
+    },
     'step': function(elapsed) {
-        var gx = GRAVITY_X * elapsed,
-            gy = GRAVITY_Y * elapsed,
+        var that = this,
+            gx = that._gravity['x'] * elapsed,
+            gy = that._gravity['y'] * elapsed,
             entity,
             entities = this.entities,
             i = entities.length,
@@ -493,20 +494,10 @@ var Engine = classExtendObserver({
         for (; i--; ) {
             entity = entities[i];
 
-            switch (entity._type) {
-                case PhysicsEntity.DYNAMIC:
-                    entity['vx'] += entity['ax'] * elapsed + gx;
-                    entity['vy'] += entity['ay'] * elapsed + gy;
-                    entity['x']  += entity['vx'] * elapsed;
-                    entity['y']  += entity['vy'] * elapsed;
-                    break;
-                case PhysicsEntity.KINEMATIC:
-                    entity['vx'] += entity['ax'] * elapsed;
-                    entity['vy'] += entity['ay'] * elapsed;
-                    entity['x']  += entity['vx'] * elapsed;
-                    entity['y']  += entity['vy'] * elapsed;
-                    break;
-            }
+            entity['vx'] += entity['ax'] * elapsed + gx;
+            entity['vy'] += entity['ay'] * elapsed + gy;
+            entity['x']  += entity['vx'] * elapsed;
+            entity['y']  += entity['vy'] * elapsed;
         
             collisions = this.collider['detectCollisions'](
                 entity, 
@@ -516,6 +507,7 @@ var Engine = classExtendObserver({
             if (collisions != NULL) {
                 this.solver['resolve'](entity, collisions);
             }
+            entity['fire']('step', collisions);
         }
     }
 });
@@ -523,12 +515,6 @@ var Engine = classExtendObserver({
 var Collision = {
     'elastic': function(restitution) {
         this.restitution = restitution || 0.2;
-    },
-    'displace': function() {
-        // While not supported in this engine
-        // the displacement collisions could include
-        // friction to slow down entities as they slide
-        // across the colliding entity
     }
 };
 // PhysicsEntity
@@ -541,8 +527,7 @@ var PhysicsEntity = classExtendObserver({
 
         that['_super']();
 
-        that._type = config['type'] || PhysicsEntity.DYNAMIC;
-        that._collision = config['collisionName'] || PhysicsEntity.ELASTIC;
+        that._collision = 'elastic';
 
         that['size'](config);
 
@@ -640,10 +625,6 @@ var PhysicsEntity = classExtendObserver({
         return this['y'] + this['height'];
     }
 });
-PhysicsEntity.KINEMATIC = 'kinematic';
-PhysicsEntity.DYNAMIC   = 'dynamic';
-PhysicsEntity.DISPLACE = 'displace';
-PhysicsEntity.ELASTIC = 'elastic';
 // CollisionDetector
 var CollisionDetector = classExtendObserver({
     // 'init': function() {
@@ -675,6 +656,10 @@ var CollisionDetector = classExtendObserver({
 });
 // CollisionResolver
 var CollisionResolver = classExtendObserver({
+    'init': function(config) {
+        this['_super']();
+        this._engine = config['engine'];
+    },
     'resolve': function(target, entities) {
         var i = entities.length;
 
@@ -683,7 +668,8 @@ var CollisionResolver = classExtendObserver({
         }
     },
     'resolveElastic': function(target, entity) {
-        var pMidX = target['getMidX'](),
+        var sticky_threshold = this._engine._sticky_threshold,
+            pMidX = target['getMidX'](),
             pMidY = target['getMidY'](),
             aMidX = entity['getMidX'](),
             aMidY = entity['getMidY'](),
@@ -726,14 +712,13 @@ var CollisionResolver = classExtendObserver({
                 target['vx'] = -target.vx * entity.restitution;
 
                 // If the object's velocity is nearing 0, set it to 0
-                // STICKY_THRESHOLD is set to .0004
-                if (abs(target['vx']) < STICKY_THRESHOLD) {
+                if (abs(target['vx']) < sticky_threshold) {
                     target['vx'] = 0;
                 }
             } else {
 
                 target['vy'] = -target['vy'] * entity.restitution;
-                if (abs(target['vy']) < STICKY_THRESHOLD) {
+                if (abs(target['vy']) < sticky_threshold) {
                     target['vy'] = 0;
                 }
             }
@@ -753,7 +738,7 @@ var CollisionResolver = classExtendObserver({
             // Velocity component
             target['vx'] = -target.vx * entity.restitution;
 
-            if (abs(target['vx']) < STICKY_THRESHOLD) {
+            if (abs(target['vx']) < sticky_threshold) {
                 target['vx'] = 0;
             }
 
@@ -771,7 +756,7 @@ var CollisionResolver = classExtendObserver({
             
             // Velocity component
             target['vy'] = -target['vy'] * entity.restitution;
-            if (abs(target['vy']) < STICKY_THRESHOLD) {
+            if (abs(target['vy']) < sticky_threshold) {
                 target['vy'] = 0;
             }
         }

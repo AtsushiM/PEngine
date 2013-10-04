@@ -8,8 +8,7 @@ var PhysicsEntity = classExtendObserver({
 
         that['_super']();
 
-        that._type = config['type'] || PhysicsEntity.DYNAMIC;
-        that._collision = config['collisionName'] || PhysicsEntity.ELASTIC;
+        that._collision = 'elastic';
 
         that['size'](config);
 
@@ -107,7 +106,3 @@ var PhysicsEntity = classExtendObserver({
         return this['y'] + this['height'];
     }
 });
-PhysicsEntity.KINEMATIC = 'kinematic';
-PhysicsEntity.DYNAMIC   = 'dynamic';
-PhysicsEntity.DISPLACE = 'displace';
-PhysicsEntity.ELASTIC = 'elastic';

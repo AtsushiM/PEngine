@@ -1,5 +1,9 @@
 // CollisionResolver
 var CollisionResolver = classExtendObserver({
+    'init': function(config) {
+        this['_super']();
+        this._engine = config['engine'];
+    },
     'resolve': function(target, entities) {
         var i = entities.length;
 
@@ -8,7 +12,8 @@ var CollisionResolver = classExtendObserver({
         }
     },
     'resolveElastic': function(target, entity) {
-        var pMidX = target['getMidX'](),
+        var sticky_threshold = this._engine._sticky_threshold,
+            pMidX = target['getMidX'](),
             pMidY = target['getMidY'](),
             aMidX = entity['getMidX'](),
             aMidY = entity['getMidY'](),
@@ -51,14 +56,13 @@ var CollisionResolver = classExtendObserver({
                 target['vx'] = -target.vx * entity.restitution;
 
                 // If the object's velocity is nearing 0, set it to 0
-                // STICKY_THRESHOLD is set to .0004
-                if (abs(target['vx']) < STICKY_THRESHOLD) {
+                if (abs(target['vx']) < sticky_threshold) {
                     target['vx'] = 0;
                 }
             } else {
 
                 target['vy'] = -target['vy'] * entity.restitution;
-                if (abs(target['vy']) < STICKY_THRESHOLD) {
+                if (abs(target['vy']) < sticky_threshold) {
                     target['vy'] = 0;
                 }
             }
@@ -78,7 +82,7 @@ var CollisionResolver = classExtendObserver({
             // Velocity component
             target['vx'] = -target.vx * entity.restitution;
 
-            if (abs(target['vx']) < STICKY_THRESHOLD) {
+            if (abs(target['vx']) < sticky_threshold) {
                 target['vx'] = 0;
             }
 
@@ -96,7 +100,7 @@ var CollisionResolver = classExtendObserver({
             
             // Velocity component
             target['vy'] = -target['vy'] * entity.restitution;
-            if (abs(target['vy']) < STICKY_THRESHOLD) {
+            if (abs(target['vy']) < sticky_threshold) {
                 target['vy'] = 0;
             }
         }
