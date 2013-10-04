@@ -22,7 +22,7 @@ var CollisionResolver = classExtendObserver({
             absDX = abs(dx),
             absDY = abs(dy);
         
-        if (abs(absDX - absDY) < .1) {
+        if (abs(absDX - absDY) < 0.1) {
             // If the target is approaching from positive X
             if (dx < 0) {
 
@@ -50,10 +50,10 @@ var CollisionResolver = classExtendObserver({
             }
             
             // Randomly select a x/y direction to reflect velocity on
-            if (Math.random() < .5) {
+            if (Math.random() < 0.5) {
 
                 // Reflect the velocity at a reduced rate
-                target['vx'] = -target.vx * entity.restitution;
+                target['vx'] = -target.vx * entity['restitution'];
 
                 // If the object's velocity is nearing 0, set it to 0
                 if (abs(target['vx']) < sticky_threshold) {
@@ -61,7 +61,7 @@ var CollisionResolver = classExtendObserver({
                 }
             } else {
 
-                target['vy'] = -target['vy'] * entity.restitution;
+                target['vy'] = -target['vy'] * entity['restitution'];
                 if (abs(target['vy']) < sticky_threshold) {
                     target['vy'] = 0;
                 }
@@ -80,7 +80,7 @@ var CollisionResolver = classExtendObserver({
             }
             
             // Velocity component
-            target['vx'] = -target.vx * entity.restitution;
+            target['vx'] = -target.vx * entity['restitution'];
 
             if (abs(target['vx']) < sticky_threshold) {
                 target['vx'] = 0;
@@ -99,7 +99,7 @@ var CollisionResolver = classExtendObserver({
             }
             
             // Velocity component
-            target['vy'] = -target['vy'] * entity.restitution;
+            target['vy'] = -target['vy'] * entity['restitution'];
             if (abs(target['vy']) < sticky_threshold) {
                 target['vy'] = 0;
             }

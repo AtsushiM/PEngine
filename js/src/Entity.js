@@ -8,12 +8,9 @@ var PhysicsEntity = classExtendObserver({
 
         that['_super']();
 
-        that._collision = 'elastic';
-
         that['size'](config);
 
-        temp = Collision[that._collision];
-        temp.call(that);
+        this['restitution'] = isNumber(config['restitution']) ? config['restitution'] : 0.2;
 
         // Position
         that['x'] = 0;

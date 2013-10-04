@@ -1,8 +1,5 @@
 // CollisionDetector
 var CollisionDetector = classExtendObserver({
-    // 'init': function() {
-    //     this['_super']();
-    // }
     'detectCollisions': function(collider, collidees) {
         var ret = [],
             i = collidees.length;

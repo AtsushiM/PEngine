@@ -74,7 +74,8 @@ var Engine = classExtendObserver({
             if (collisions != NULL) {
                 this.solver['resolve'](entity, collisions);
             }
-            entity['fire']('step', collisions);
+
+            entity['emit']('step', collisions);
         }
     }
 });

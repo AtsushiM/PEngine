@@ -83,7 +83,7 @@ var Observer = classExtend(NULL, {
 
         return delete observed[key];
     },
-    'fire': Observer_bubble,
+    'emit': Observer_bubble,
     'bubble': Observer_bubble,
     'capture': function() {
         var that = this,

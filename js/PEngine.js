@@ -228,9 +228,6 @@ function classExtend(cls, prop, support /* varless */, klass) {
 
     return klass;
 }
-function classExtendBase(prop, support) {
-    return classExtend(Base, prop, support);
-}
 function classExtendObserver(prop, support) {
     return classExtend(Observer, prop, support);
 }
@@ -320,7 +317,7 @@ var Observer = classExtend(NULL, {
 
         return delete observed[key];
     },
-    'fire': Observer_bubble,
+    'emit': Observer_bubble,
     'bubble': Observer_bubble,
     'capture': function() {
         var that = this,
@@ -507,16 +504,12 @@ var Engine = classExtendObserver({
             if (collisions != NULL) {
                 this.solver['resolve'](entity, collisions);
             }
-            entity['fire']('step', collisions);
+
+            entity['emit']('step', collisions);
         }
     }
 });
 // Collision Decorator Pattern Abstraction
-var Collision = {
-    'elastic': function(restitution) {
-        this.restitution = restitution || 0.2;
-    }
-};
 // PhysicsEntity
 var PhysicsEntity = classExtendObserver({
     'init': function(config) {
@@ -527,12 +520,9 @@ var PhysicsEntity = classExtendObserver({
 
         that['_super']();
 
-        that._collision = 'elastic';
-
         that['size'](config);
 
-        temp = Collision[that._collision];
-        temp.call(that);
+        this['restitution'] = isNumber(config['restitution']) ? config['restitution'] : 0.2;
 
         // Position
         that['x'] = 0;
@@ -627,9 +617,6 @@ var PhysicsEntity = classExtendObserver({
 });
 // CollisionDetector
 var CollisionDetector = classExtendObserver({
-    // 'init': function() {
-    //     this['_super']();
-    // }
     'detectCollisions': function(collider, collidees) {
         var ret = [],
             i = collidees.length;
@@ -678,7 +665,7 @@ var CollisionResolver = classExtendObserver({
             absDX = abs(dx),
             absDY = abs(dy);
         
-        if (abs(absDX - absDY) < .1) {
+        if (abs(absDX - absDY) < 0.1) {
             // If the target is approaching from positive X
             if (dx < 0) {
 
@@ -706,10 +693,10 @@ var CollisionResolver = classExtendObserver({
             }
             
             // Randomly select a x/y direction to reflect velocity on
-            if (Math.random() < .5) {
+            if (Math.random() < 0.5) {
 
                 // Reflect the velocity at a reduced rate
-                target['vx'] = -target.vx * entity.restitution;
+                target['vx'] = -target.vx * entity['restitution'];
 
                 // If the object's velocity is nearing 0, set it to 0
                 if (abs(target['vx']) < sticky_threshold) {
@@ -717,7 +704,7 @@ var CollisionResolver = classExtendObserver({
                 }
             } else {
 
-                target['vy'] = -target['vy'] * entity.restitution;
+                target['vy'] = -target['vy'] * entity['restitution'];
                 if (abs(target['vy']) < sticky_threshold) {
                     target['vy'] = 0;
                 }
@@ -736,7 +723,7 @@ var CollisionResolver = classExtendObserver({
             }
             
             // Velocity component
-            target['vx'] = -target.vx * entity.restitution;
+            target['vx'] = -target.vx * entity['restitution'];
 
             if (abs(target['vx']) < sticky_threshold) {
                 target['vx'] = 0;
@@ -755,7 +742,7 @@ var CollisionResolver = classExtendObserver({
             }
             
             // Velocity component
-            target['vy'] = -target['vy'] * entity.restitution;
+            target['vy'] = -target['vy'] * entity['restitution'];
             if (abs(target['vy']) < sticky_threshold) {
                 target['vy'] = 0;
             }

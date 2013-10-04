@@ -70,9 +70,6 @@ function classExtend(cls, prop, support /* varless */, klass) {
 
     return klass;
 }
-function classExtendBase(prop, support) {
-    return classExtend(Base, prop, support);
-}
 function classExtendObserver(prop, support) {
     return classExtend(Observer, prop, support);
 }
