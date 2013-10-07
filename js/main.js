@@ -99,8 +99,8 @@
     function randamAddEntity() {
         setTimeout(function() {
             var entity = new PE.Entity({
-                width: 1,
-                height: 1,
+                width: 5,
+                height: 5,
                 position: {
                     x: Math.floor(Math.random() * 390),
                     y: 0

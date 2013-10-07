@@ -1,17 +1,10 @@
 // CollisionResolver
-var CollisionResolver = classExtendObserver({
+CollisionResolver = classExtendObserver({
     'init': function(config) {
         this['_super']();
         this._engine = config['engine'];
     },
-    'resolve': function(target, entities) {
-        var i = entities.length;
-
-        for (; i--; ) {
-            this['resolveElastic'](target, entities[i]);
-        }
-    },
-    'resolveElastic': function(target, entity) {
+    'resolve': function(target, entity) {
         var sticky_threshold = this._engine._sticky_threshold,
             pMidX = target['getMidX'](),
             pMidY = target['getMidY'](),

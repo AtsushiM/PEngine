@@ -1,4 +1,5 @@
 // Util
+
 var win = window,
     doc = document,
     TRUE = true,
@@ -9,13 +10,8 @@ var win = window,
     class_initializing = FALSE,
     class_fnTest = /0/.test(function() {
         0;
-    }) ? /\b_super\b/ : /.*/;
-
-if (!Date['now']) {
-    Date['now'] = function() {
-        return +new Date;
-    };
-}
+    }) ? /\b_super\b/ : /.*/,
+    Class;
 
 function abs(num) {
     return Math.abs(num);
@@ -155,4 +151,77 @@ function inRange(val1, val2, num) {
     }
 
     return false;
+}
+
+function on(el, eventname, handler) {
+    el.addEventListener(eventname, handler, FALSE);
+}
+function off(el, eventname, handler) {
+    el.removeEventListener(eventname, handler, FALSE);
+}
+
+function classExtend(cls, prop, support /* varless */, klass) {
+    cls = cls || Class;
+
+    /* var klass = cls.extend(prop); */
+    klass = cls.extend(prop);
+
+    if (isDefined(support)) {
+        klass['support'] = support;
+    }
+
+    return klass;
+}
+function classExtendObserver(prop, support) {
+    return classExtend(Observer, prop, support);
+}
+
+function Observer_removeChildExe(childs, i) {
+    delete childs[i]._parentObserver;
+    deleteArrayKey(childs, i);
+}
+function Observer_bubble() {
+    var that = this,
+        args = arguments,
+        temp = that['only'].apply(that, args);
+
+    if (FALSE !== temp && !(temp || NULLOBJ)._flgStopPropagation) {
+        /* that._parentFire.apply(that, args); */
+        temp = this._parentObserver;
+
+        if (temp) {
+            temp['bubble'].apply(temp, args);
+        }
+    }
+}
+function Observer_preventDefault() {
+    this._flgPreventDefault = TRUE;
+}
+function Observer_stopPropagation() {
+    this._flgStopPropagation = TRUE;
+}
+function Observer_event(that, args /* varless */, e) {
+    e = args[0];
+
+    if (isString(e)) {
+        e = {
+            'type': e,
+            'arguments': args,
+            _flgPreventDefault: FALSE,
+            _flgStopPropagation: FALSE,
+            'preventDefault': Observer_preventDefault,
+            'stopPropagation': Observer_stopPropagation
+        };
+    }
+
+    e['before'] = e['target'];
+    e['target'] = that;
+
+    return e;
+}
+
+if (!Date['now']) {
+    Date['now'] = function() {
+        return +new Date;
+    };
 }

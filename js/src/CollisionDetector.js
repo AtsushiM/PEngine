@@ -1,26 +1,25 @@
 // CollisionDetector
-var CollisionDetector = classExtendObserver({
+CollisionDetector = classExtendObserver({
     'detectCollisions': function(collider, collidees) {
-        var ret = [],
-            i = collidees.length;
+        var i = collidees.length;
 
         for (; i--; ) {
-            if (this['collideRect'](collider, collidees[i])) {
-                ret.push(collidees[i]);
+            if (collider !== collidees[i] && this['collideRect'](collider, collidees[i])) {
+                return collidees[i];
             }
         }
 
-        return ret.length ? ret : NULL;
+        return NULL;
     },
     'collideRect': function(collider, collidee) {
         if (
-            collider['getBottom']() < collidee['getTop']() ||
-            collider['getTop']() > collidee['getBottom']() ||
-            collider['getRight']() < collidee['getLeft']() ||
-            collider['getLeft']() > collidee['getRight']()
+            collider['getBottom']() <= collidee['getTop']() ||
+            collider['getTop']() >= collidee['getBottom']() ||
+            collider['getRight']() <= collidee['getLeft']() ||
+            collider['getLeft']() >= collidee['getRight']()
         ) {
             return FALSE;
         }
         return TRUE;
     }
-});
+}),

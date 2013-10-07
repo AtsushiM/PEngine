@@ -1,5 +1,5 @@
 // PhysicsEntity
-var PhysicsEntity = classExtendObserver({
+PhysicsEntity = classExtendObserver({
     'init': function(config) {
         config = config || NULLOBJ;
 
@@ -102,4 +102,4 @@ var PhysicsEntity = classExtendObserver({
     'getBottom': function() {
         return this['y'] + this['height'];
     }
-});
+}),

@@ -1,6 +1,5 @@
 // Class
-var Class = function() {};
-
+Class = function() {};
 Class.extend = function(props/* varless */, SuperClass, i) {
     // var SuperClass = this,
     //     i;
@@ -57,19 +56,3 @@ Class.extend = function(props/* varless */, SuperClass, i) {
 
     return Class;
 };
-
-function classExtend(cls, prop, support /* varless */, klass) {
-    cls = cls || Class;
-
-    /* var klass = cls.extend(prop); */
-    klass = cls.extend(prop);
-
-    if (isDefined(support)) {
-        klass['support'] = support;
-    }
-
-    return klass;
-}
-function classExtendObserver(prop, support) {
-    return classExtend(Observer, prop, support);
-}

@@ -1,5 +1,5 @@
 // Engine
-var Engine = classExtendObserver({
+Engine = classExtendObserver({
     'init': function(config) {
         config = config || NULLOBJ;
 
@@ -56,7 +56,7 @@ var Engine = classExtendObserver({
             entity,
             entities = this.entities,
             i = entities.length,
-            collisions;
+            collision;
         
         for (; i--; ) {
             entity = entities[i];
@@ -66,16 +66,16 @@ var Engine = classExtendObserver({
             entity['x']  += entity['vx'] * elapsed;
             entity['y']  += entity['vy'] * elapsed;
         
-            collisions = this.collider['detectCollisions'](
+            collision = this.collider['detectCollisions'](
                 entity, 
                 this.collidables
             );
 
-            if (collisions != NULL) {
-                this.solver['resolve'](entity, collisions);
+            if (collision != NULL) {
+                this.solver['resolve'](entity, collision);
             }
 
-            entity['emit']('step', collisions);
+            entity['emit']('step', collision);
         }
     }
-});
+}),

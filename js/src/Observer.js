@@ -1,5 +1,5 @@
 // Observer
-var Observer = classExtend(NULL, {
+Observer = classExtend(NULL, {
     _disposecountid: 0,
     'dispose': function(/* varless */ that, i, temp) {
         that = this;
@@ -149,48 +149,4 @@ var Observer = classExtend(NULL, {
             }
         }
     }
-});
-
-function Observer_removeChildExe(childs, i) {
-    delete childs[i]._parentObserver;
-    deleteArrayKey(childs, i);
-}
-function Observer_bubble() {
-    var that = this,
-        args = arguments,
-        temp = that['only'].apply(that, args);
-
-    if (FALSE !== temp && !(temp || NULLOBJ)._flgStopPropagation) {
-        /* that._parentFire.apply(that, args); */
-        temp = this._parentObserver;
-
-        if (temp) {
-            temp['bubble'].apply(temp, args);
-        }
-    }
-}
-function Observer_preventDefault() {
-    this._flgPreventDefault = TRUE;
-}
-function Observer_stopPropagation() {
-    this._flgStopPropagation = TRUE;
-}
-function Observer_event(that, args /* varless */, e) {
-    e = args[0];
-
-    if (isString(e)) {
-        e = {
-            'type': e,
-            'arguments': args,
-            _flgPreventDefault: FALSE,
-            _flgStopPropagation: FALSE,
-            'preventDefault': Observer_preventDefault,
-            'stopPropagation': Observer_stopPropagation
-        };
-    }
-
-    e['before'] = e['target'];
-    e['target'] = that;
-
-    return e;
-}
+}),
