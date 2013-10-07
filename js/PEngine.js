@@ -449,10 +449,10 @@ Engine = classExtendObserver({
 
         that['_super']();
 
-        that._gravity = config['gravity'] || {
-            'x': 0,
-            'y': 0.000980665
-        };
+        that._gravity = config['gravity'];
+        that._gravity['x'] = isNumber(that._gravity['x']) ? that._gravity['x'] : 0;
+        that._gravity['y'] = isNumber(that._gravity['y']) ? that._gravity['y'] : 0.000980665;
+
         that._sticky_threshold = config['sticky_threshold'] || 0.0004;
 
         that.entities = [];
@@ -627,11 +627,13 @@ PhysicsEntity = classExtendObserver({
 // CollisionDetector
 CollisionDetector = classExtendObserver({
     'detectCollisions': function(collider, collidees) {
-        var i = collidees.length;
+        var i = collidees.length,
+            temp;
 
         for (; i--; ) {
-            if (collider !== collidees[i] && this['collideRect'](collider, collidees[i])) {
-                return collidees[i];
+            temp = collidees[i];
+            if (collider !== temp && this['collideRect'](collider, temp)) {
+                return temp;
             }
         }
 

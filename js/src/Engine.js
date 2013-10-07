@@ -10,10 +10,10 @@ Engine = classExtendObserver({
 
         that['_super']();
 
-        that._gravity = config['gravity'] || {
-            'x': 0,
-            'y': 0.000980665
-        };
+        that._gravity = config['gravity'];
+        that._gravity['x'] = isNumber(that._gravity['x']) ? that._gravity['x'] : 0;
+        that._gravity['y'] = isNumber(that._gravity['y']) ? that._gravity['y'] : 0.000980665;
+
         that._sticky_threshold = config['sticky_threshold'] || 0.0004;
 
         that.entities = [];

@@ -2,7 +2,11 @@
 (function() {
     var $stage = document.getElementById('stage'),
         ctx = $stage.getContext('2d'),
-        engine = new PE(),
+        engine = new PE({
+            gravity: {
+                y: 0.000580665
+            }
+        }),
         detector = new PE.CollisionDetector(),
         stage_collision = new PE.Entity({
             width: 400,
@@ -20,7 +24,7 @@
         }
     }));
 
-    setInterval(addEntity, 300);
+    setInterval(addEntity, 200);
     /* addEntity(); */
     loop();
 
@@ -66,23 +70,23 @@
                 }
             });
 
-        entity.on('step', function(collision) {
-            if (!detector.collideRect(stage_collision, this)) {
-                engine.removeEntity(this);
-                engine.removeCollision(this);
-            }
-            // else if (collision) {
-            //     direction = Math.random() < 0.5 ? -1 : 1;
+        // entity.on('step', function(collision) {
+        //     if (!detector.collideRect(stage_collision, this)) {
+        //         engine.removeEntity(this);
+        //         engine.removeCollision(this);
+        //     }
+        //     else if (collision) {
+        //         direction = Math.random() < 0.5 ? -1 : 1;
 
-            //     this.velocity({
-            //         x: Math.random() / 10 * direction,
-            //         y: this.vy - Math.random() / 10
-            //     });
-            // }
-        });
+        //         this.velocity({
+        //             x: Math.random() / 10 * direction,
+        //             y: this.vy - Math.random() / 10
+        //         });
+        //     }
+        // });
 
-        engine.addEntity(entity);
         engine.addCollision(entity);
+        engine.addEntity(entity);
 
         setTimeout(function() {
             engine.removeEntity(entity);

@@ -1,11 +1,13 @@
 // CollisionDetector
 CollisionDetector = classExtendObserver({
     'detectCollisions': function(collider, collidees) {
-        var i = collidees.length;
+        var i = collidees.length,
+            temp;
 
         for (; i--; ) {
-            if (collider !== collidees[i] && this['collideRect'](collider, collidees[i])) {
-                return collidees[i];
+            temp = collidees[i];
+            if (collider !== temp && this['collideRect'](collider, temp)) {
+                return temp;
             }
         }
 
