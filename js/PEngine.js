@@ -1,18 +1,4 @@
 // Util
-
-var win = window,
-    doc = document,
-    TRUE = true,
-    FALSE = false,
-    NULL = null,
-    EMPTY = '',
-    NULLOBJ = {},
-    class_initializing = FALSE,
-    class_fnTest = /0/.test(function() {
-        0;
-    }) ? /\b_super\b/ : /.*/,
-    Class;
-
 function abs(num) {
     return Math.abs(num);
 }
@@ -42,10 +28,6 @@ function this_contract(el, e, handler /* varless */, that, id) {
     that._disposestore[id] = [el, e, handler];
 
     return id;
-}
-
-function dateNow() {
-    return Date['now']();
 }
 
 function override(target, vars /* varless */, i) {
@@ -220,11 +202,18 @@ function Observer_event(that, args /* varless */, e) {
     return e;
 }
 
-if (!Date['now']) {
-    Date['now'] = function() {
-        return +new Date;
-    };
-}
+var win = window,
+    doc = document,
+    TRUE = true,
+    FALSE = false,
+    NULL = null,
+    EMPTY = '',
+    NULLOBJ = {},
+    class_initializing = FALSE,
+    class_fnTest = /0/.test(function() {
+        0;
+    }) ? /\b_super\b/ : /.*/,
+    Class;
 // Class
 Class = function() {};
 Class.extend = function(props/* varless */, SuperClass, i) {
@@ -422,12 +411,12 @@ Observer = classExtend(NULL, {
             i = childs.length;
 
         if (instance) {
-            for (; i--; ) {
-                if (childs[i] === instance) {
-                    Observer_removeChildExe(childs, i);
+            i = inArray(instance, childs);
 
-                    return;
-                }
+            if (i !== -1) {
+                Observer_removeChildExe(childs, i);
+
+                return;
             }
         }
         else {
@@ -473,13 +462,10 @@ Engine = classExtendObserver({
         this._removeEntity(this.collidables, entity);
     },
     _removeEntity: function(entities, entity) {
-        var i = entities.length;
-
-        for (; i--; ) {
-            if (entities[i] === entity) {
-                deleteArrayKey(entities, i);
-                break;
-            }
+        var i = inArray(entity, entities);
+        
+        if (i !== -1) {
+            deleteArrayKey(entities, i);
         }
     },
     'getEntities': function() {

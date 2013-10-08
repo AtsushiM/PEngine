@@ -1,18 +1,4 @@
 // Util
-
-var win = window,
-    doc = document,
-    TRUE = true,
-    FALSE = false,
-    NULL = null,
-    EMPTY = '',
-    NULLOBJ = {},
-    class_initializing = FALSE,
-    class_fnTest = /0/.test(function() {
-        0;
-    }) ? /\b_super\b/ : /.*/,
-    Class;
-
 function abs(num) {
     return Math.abs(num);
 }
@@ -42,10 +28,6 @@ function this_contract(el, e, handler /* varless */, that, id) {
     that._disposestore[id] = [el, e, handler];
 
     return id;
-}
-
-function dateNow() {
-    return Date['now']();
 }
 
 function override(target, vars /* varless */, i) {
@@ -220,8 +202,15 @@ function Observer_event(that, args /* varless */, e) {
     return e;
 }
 
-if (!Date['now']) {
-    Date['now'] = function() {
-        return +new Date;
-    };
-}
+var win = window,
+    doc = document,
+    TRUE = true,
+    FALSE = false,
+    NULL = null,
+    EMPTY = '',
+    NULLOBJ = {},
+    class_initializing = FALSE,
+    class_fnTest = /0/.test(function() {
+        0;
+    }) ? /\b_super\b/ : /.*/,
+    Class;

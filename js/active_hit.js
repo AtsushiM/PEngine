@@ -11,8 +11,9 @@
         stage_collision = new PE.Entity({
             width: 400,
             height: 300
-        });
-        elapsed = Date.now();
+        }),
+        elapsed = Date.now(),
+        i, j;
 
     engine.addCollision(new PE.Entity({
         width: 440,
@@ -20,12 +21,31 @@
         restitution: 0.5,
         position: {
             x: -20,
-            y: 280
+            y: 300
         }
     }));
 
-    setInterval(addEntity, 200);
-    /* addEntity(); */
+    i = 20;
+
+    rapidAdd();
+
+    function rapidAdd() {
+        setTimeout(function() {
+            var _i = i;
+
+            for (; _i--; ) {
+                _rapidAdd(_i);
+            }
+
+            rapidAdd();
+        }, 1200);
+    }
+    function _rapidAdd(i) {
+        setTimeout(function() {
+            addEntity(i);
+        }, i * 200);
+    }
+
     loop();
 
     function render() {
@@ -59,14 +79,13 @@
         });
     }
 
-    function addEntity() {
+    function addEntity(point_x) {
         var entity = new PE.Entity({
                 width: 20,
                 height: 20,
-                elapsed: 0.5,
                 position: {
-                    x: Math.round(Math.random() * 380 / 20) * 20,
-                    h: 0
+                    x: point_x * 20,
+                    y: 0
                 }
             });
 
@@ -91,7 +110,7 @@
         setTimeout(function() {
             engine.removeEntity(entity);
             engine.removeCollision(entity);
-        }, 20000);
+        }, 5000);
     }
 }());
 

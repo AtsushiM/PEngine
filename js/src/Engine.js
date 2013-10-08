@@ -34,13 +34,10 @@ Engine = classExtendObserver({
         this._removeEntity(this.collidables, entity);
     },
     _removeEntity: function(entities, entity) {
-        var i = entities.length;
-
-        for (; i--; ) {
-            if (entities[i] === entity) {
-                deleteArrayKey(entities, i);
-                break;
-            }
+        var i = inArray(entity, entities);
+        
+        if (i !== -1) {
+            deleteArrayKey(entities, i);
         }
     },
     'getEntities': function() {

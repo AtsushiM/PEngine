@@ -135,12 +135,12 @@ Observer = classExtend(NULL, {
             i = childs.length;
 
         if (instance) {
-            for (; i--; ) {
-                if (childs[i] === instance) {
-                    Observer_removeChildExe(childs, i);
+            i = inArray(instance, childs);
 
-                    return;
-                }
+            if (i !== -1) {
+                Observer_removeChildExe(childs, i);
+
+                return;
             }
         }
         else {

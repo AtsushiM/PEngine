@@ -1,12 +1,95 @@
-// main
-(function() {
+// scroll
+!function() {
+    bg();
+    chara();
+}();
+function chara() {
     var $stage = document.getElementById('stage'),
         ctx = $stage.getContext('2d'),
         engine = new PE({
             sticky_threshold: 0.0004,
             gravity: {
+                x: 0,
+                y: 0
+            }
+        }),
+        chara = new PE.Entity({
+            width: 10,
+            height : 10,
+            acceleration: {
+                x: 0,
+                y: 0.000980665
+            },
+            position: {
+                x: 100,
+                y: 100
+            }
+        }),
+        elapsed = Date.now();
+
+    engine.addCollision(new PE.Entity({
+        width: 440,
+        height: 1000,
+        restitution: 0.5,
+        position: {
+            x: -20,
+            y: 280
+        }
+    }));
+
+    engine.addEntity(chara);
+
+    chara.on('step', function() {
+        console.log(this.y);
+    });
+
+    $stage.addEventListener('click', function() {
+        chara.velocity({
+            y: chara.vy - 0.5
+        });
+    });
+
+    loop();
+
+    function render() {
+        ctx.clearRect(0, 0, 400, 300);
+
+        _render(engine.getEntities());
+        _render(engine.getCollidables());
+    }
+    function _render(entities) {
+        var i = entities.length,
+            entity;
+
+        for (; i--; ) {
+            entity = entities[i];
+
+            ctx.fillStyle = "rgb(150,29,28)";
+            ctx.fillRect(entity['x'], entity['y'], entity['width'], entity['height']);
+        }
+    }
+
+    function loop() {
+        requestAnimationFrame(function() {
+            temp = Date.now();
+
+            engine.step(temp - elapsed);
+            render();
+
+            elapsed = temp;
+
+            loop();
+        });
+    }
+}
+function bg() {
+    var $stage = document.getElementById('bg'),
+        ctx = $stage.getContext('2d'),
+        engine = new PE({
+            sticky_threshold: 0.0004,
+            gravity: {
                 y: 0,
-                x: -0.000980665
+                x: 0
             }
         }),
         temp,
@@ -16,30 +99,6 @@
             width: 400,
             height: 300
         });
-    
-    temp = new PE.Entity({
-        width: 440,
-        height: 1000,
-        restitution: 0.5,
-        position: {
-            x: -20,
-            y: 280
-        }
-    });
-
-    engine.addCollision(temp);
-
-    $stage.addEventListener('click', function() {
-        var entities = engine.getEntities(),
-            i = entities.length;
-
-        for (; i--; ) {
-            entities[i].velocity({
-                x: -Math.random(),
-                y: -Math.random()
-            });
-        }
-    });
 
     loop();
     randamAddEntity();
@@ -103,6 +162,10 @@
             var entity = new PE.Entity({
                 width: 1,
                 height: 1,
+                acceleration: {
+                    x: -0.000980665,
+                    y: 0
+                },
                 position: {
                     y: Math.floor(Math.random() * 390),
                     x: 399 
@@ -117,4 +180,4 @@
             randamAddEntity();
         }, Math.floor(Math.random() * 10));
     }
-}());
+}
