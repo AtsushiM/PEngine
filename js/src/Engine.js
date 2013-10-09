@@ -10,12 +10,11 @@ Engine = classExtendObserver({
 
         that['_super']();
 
-        that._gravity = config['gravity'];
-        that._gravity['x'] = isNumber(that._gravity['x']) ? that._gravity['x'] : 0;
-        that._gravity['y'] = isNumber(that._gravity['y']) ? that._gravity['y'] : 0.000980665;
+        that['setGravity'](config['gravity'] || {});
 
         that._sticky_threshold = config['sticky_threshold'] || 0.0004;
 
+        that.entitiesAndCollidables = [];
         that.entities = [];
         that.collidables = [];
         that.collider = new CollisionDetector(arg);
@@ -23,12 +22,14 @@ Engine = classExtendObserver({
     },
     'addEntity': function(entity) {
         this.entities.push(entity);
+        this.entitiesAndCollidables.push(entity);
     },
     'removeEntity': function(entity) {
         this._removeEntity(this.entities, entity);
     },
     'addCollision': function(entity) {
         this.collidables.push(entity);
+        this.entitiesAndCollidables.push(entity);
     },
     'removeCollision': function(entity) {
         this._removeEntity(this.collidables, entity);
@@ -40,11 +41,24 @@ Engine = classExtendObserver({
             deleteArrayKey(entities, i);
         }
     },
+    'getGravity': function() {
+        return this._gravity;
+    },
+    'setGravity': function(obj) {
+        var that = this;
+
+        that._gravity = obj;
+        that._gravity['x'] = isNumber(obj['x']) ? obj['x'] : that._gravity['x'] || 0;
+        that._gravity['y'] = isNumber(obj['y']) ? obj['y'] : that._gravity['y'] || 0.000980665;
+    },
     'getEntities': function() {
         return this.entities;
     },
     'getCollidables': function() {
         return this.collidables;
+    },
+    'getEntitiesAndCollidables': function() {
+        return this.entitiesAndCollidables;
     },
     'step': function(elapsed) {
         var that = this,
