@@ -1,4 +1,5 @@
 // PhysicsEntity
+PhysicsEntityID = 0,
 PhysicsEntity = classExtendObserver({
     'init': function(config) {
         config = config || NULLOBJ;
@@ -7,6 +8,9 @@ PhysicsEntity = classExtendObserver({
             temp;
 
         that['_super']();
+
+        that._id = PhysicsEntityID;
+        PhysicsEntityID++;
 
         that['size'](config);
 

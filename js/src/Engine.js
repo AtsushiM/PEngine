@@ -14,7 +14,6 @@ Engine = classExtendObserver({
 
         that._sticky_threshold = config['sticky_threshold'] || 0.0004;
 
-        that.entitiesAndCollidables = [];
         that.entities = [];
         that.collidables = [];
         that.collider = new CollisionDetector(arg);
@@ -22,14 +21,12 @@ Engine = classExtendObserver({
     },
     'addEntity': function(entity) {
         this.entities.push(entity);
-        this.entitiesAndCollidables.push(entity);
     },
     'removeEntity': function(entity) {
         this._removeEntity(this.entities, entity);
     },
     'addCollision': function(entity) {
         this.collidables.push(entity);
-        this.entitiesAndCollidables.push(entity);
     },
     'removeCollision': function(entity) {
         this._removeEntity(this.collidables, entity);

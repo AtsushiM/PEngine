@@ -442,7 +442,6 @@ Engine = classExtendObserver({
 
         that._sticky_threshold = config['sticky_threshold'] || 0.0004;
 
-        that.entitiesAndCollidables = [];
         that.entities = [];
         that.collidables = [];
         that.collider = new CollisionDetector(arg);
@@ -450,14 +449,12 @@ Engine = classExtendObserver({
     },
     'addEntity': function(entity) {
         this.entities.push(entity);
-        this.entitiesAndCollidables.push(entity);
     },
     'removeEntity': function(entity) {
         this._removeEntity(this.entities, entity);
     },
     'addCollision': function(entity) {
         this.collidables.push(entity);
-        this.entitiesAndCollidables.push(entity);
     },
     'removeCollision': function(entity) {
         this._removeEntity(this.collidables, entity);
@@ -520,6 +517,7 @@ Engine = classExtendObserver({
 }),
 // Collision Decorator Pattern Abstraction
 // PhysicsEntity
+PhysicsEntityID = 0,
 PhysicsEntity = classExtendObserver({
     'init': function(config) {
         config = config || NULLOBJ;
@@ -528,6 +526,9 @@ PhysicsEntity = classExtendObserver({
             temp;
 
         that['_super']();
+
+        that._id = PhysicsEntityID;
+        PhysicsEntityID++;
 
         that['size'](config);
 

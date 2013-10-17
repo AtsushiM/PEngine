@@ -5,25 +5,28 @@
         engine = new PE({
             sticky_threshold: 0.0004,
             gravity: {
-                y: 0,
-                x: -0.000980665
+                x: 0,
+                y: 0.000980665
             }
         }),
         temp,
         elapsed = Date.now(),
         detector = new PE.CollisionDetector(),
         stage_collision = new PE.Entity({
-            width: 400,
-            height: 300
+            width: window.innerWidth,
+            height: window.innerHeight
         });
+
+    $stage.setAttribute('width', window.innerWidth);
+    $stage.setAttribute('height', window.innerHeight);
     
     temp = new PE.Entity({
-        width: 440,
+        width: window.innerWidth + 20,
         height: 1000,
         restitution: 0.5,
         position: {
             x: -20,
-            y: 280
+            y: window.innerHeight - 20
         }
     });
 
@@ -45,7 +48,7 @@
     randamAddEntity();
 
     function render() {
-        ctx.clearRect(0, 0, 400, 300);
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
         _render(engine.getEntities());
         _render(engine.getCollidables());
@@ -78,10 +81,10 @@
     function onStep(entity) {
         var direction;
 
-        setTimeout(function() {
-            engine.removeEntity(entity);
-            engine.removeCollision(entity);
-        }, 2000);
+        // setTimeout(function() {
+        //     engine.removeEntity(entity);
+        //     engine.removeCollision(entity);
+        // }, 3000);
         entity.on('step', function(collision) {
             if (!detector.collideRect(stage_collision, this)) {
                 engine.removeEntity(this);
@@ -101,20 +104,20 @@
     function randamAddEntity() {
         setTimeout(function() {
             var entity = new PE.Entity({
-                width: 1,
-                height: 1,
+                width: 50,
+                height: 50,
                 position: {
-                    y: Math.floor(Math.random() * 390),
-                    x: 399 
+                    x: Math.floor(Math.random() * window.innerWidth - 5),
+                    y: 0
                 }
             });
 
             onStep(entity);
 
             engine.addEntity(entity);
-            engine.addCollision(entity);
+            /* engine.addCollision(entity); */
 
             randamAddEntity();
-        }, Math.floor(Math.random() * 10));
+        }, Math.floor(Math.random() * 100));
     }
 }());

@@ -51,8 +51,7 @@
     function render() {
         ctx.clearRect(0, 0, 400, 300);
 
-        _render(engine.getEntities());
-        _render(engine.getCollidables());
+        _render(engine.getEntitiesAndCollidables());
     }
     function _render(entities) {
         var i = entities.length,
